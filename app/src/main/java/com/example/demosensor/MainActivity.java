@@ -8,6 +8,8 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.content.Intent;
+import com.example.demosensor.TheService;
 
 public class MainActivity extends AppCompatActivity {
     TextView textView;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView=(TextView)findViewById(R.id.tv);
 
+        /*
         SensorManager sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
         final Sensor proxitySensor=sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
@@ -25,16 +28,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSensorChanged(SensorEvent event) {
 
-                if (event.values[0]<proxitySensor.getMaximumRange())
+                if (event.values[0] < proxitySensor.getMaximumRange())
                 {
                     getWindow().getDecorView().setBackgroundColor(Color.RED);
-                    textView.setText("Lal Selam");
+                    textView.setText("Gần");
 
                 }
                 else
                 {
                     getWindow().getDecorView().setBackgroundColor(Color.GREEN);
-                    textView.setText("Test Sensor");
+                    textView.setText("Xa");
                 }
             }
 
@@ -44,7 +47,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sensorManager.registerListener(sensorEventListener,proxitySensor,2*1000*1000);
+        sensorManager.registerListener(sensorEventListener,proxitySensor, SensorManager.SENSOR_DELAY_NORMAL); // 2*1000*1000
+        // */
+        textView.setText("Wakeup vinhjaxt!!!");
+        Intent intent = new Intent(this, TheService.class);
+        startService(intent);
 
     }
 }
