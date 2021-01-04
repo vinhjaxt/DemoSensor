@@ -1,5 +1,6 @@
 package com.example.demosensor;
 
+import android.media.AudioManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
@@ -27,6 +28,7 @@ public class TheService extends Service implements SensorEventListener {
     private Sensor n;
     private PowerManager o;
     private float lastValue = 0;
+    private AudioManager audioManager = null;
 
     public void onAccuracyChanged(Sensor sensor, int i2) {
         // Log.i(a, "onAccuracyChanged()");
@@ -37,10 +39,20 @@ public class TheService extends Service implements SensorEventListener {
         float lastValue = this.lastValue;
         this.lastValue = event.values[0];
         boolean isScreenOn = this.o.isScreenOn();
-        if (!isScreenOn && lastValue == 0 && event.values[0] > 0 ) {
-            this.c.acquire();
-            this.c.release();
-            return;
+        if (lastValue == 0 && event.values[0] > 0) {
+            if (isScreenOn) {
+                int media_current_volume = this.audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                this.audioManager.setStreamVolume(
+                        AudioManager.STREAM_MUSIC, // Stream type
+                        media_current_volume, // Index
+                        AudioManager.FLAG_SHOW_UI // Flags
+                    );
+                return;
+            } else {
+                this.c.acquire();
+                this.c.release();
+                return;
+            }
         }
     }
 
@@ -50,6 +62,7 @@ public class TheService extends Service implements SensorEventListener {
         this.c = this.o.newWakeLock((PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), a);
         this.b = (SensorManager) getSystemService(SENSOR_SERVICE);
         this.n = this.b.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        this.audioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
 
         // If earlier version channel ID is not used
         // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
